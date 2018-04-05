@@ -8,18 +8,18 @@ public class Comment {
     private int page;
     private String comment;
     private Date date;
-    private String boolTitle;
+    private String bookTitle;
 
     public Comment() {
     }
 
-    public Comment(int id, int bookId, int page, String comment, Date date, String boolTitle) {
+    public Comment(int id, int bookId, int page, String comment, Date date, String bookTitle) {
         this.id = id;
         this.bookId = bookId;
         this.page = page;
         this.comment = comment;
         this.date = date;
-        this.boolTitle = boolTitle;
+        this.bookTitle = bookTitle;
     }
 
     public Comment(int id, int bookId, int page, String comment, Date date) {
@@ -70,11 +70,11 @@ public class Comment {
         this.date = date;
     }
 
-    public String getBoolTitle() {
-        return boolTitle;
+    public String getBookTitle() {
+        return bookTitle;
     }
 
-    public void setBoolTitle(String boolTitle) {
-        this.boolTitle = boolTitle;
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
     }
 }
