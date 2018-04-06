@@ -1,29 +1,41 @@
 package smartbookmarks.masson.diiage.org.Entities;
 
+import java.util.ArrayList;
+
 public class Book {
     private int id;
     private String title;
     private String author;
     private String genre;
+    ArrayList<Comment> comments;
     private int nbComments;
 
     public Book() {
         this.nbComments = 0;
     }
 
-    public Book(String title, String author, String genre) {
-        this.id = 0;
-        this.title = title;
-        this.author = author;
-        this.genre = genre;
-        this.nbComments = 0;
-    }
-
-    public Book(int id, String title, String author, String genre, int nbComments) {
+    public Book(int id, String title, String author, String genre) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.genre = genre;
+    }
+
+    public Book(String title, String author, String genre, ArrayList<Comment> comments) {
+        this.id = 0;
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.comments = comments;
+        this.nbComments = 0;
+    }
+
+    public Book(int id, String title, String author, String genre, int nbComments, ArrayList<Comment> comments) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.comments = comments;
         this.nbComments = nbComments;
     }
 
@@ -59,6 +71,14 @@ public class Book {
 
     public void setGenre(String genre) {
         this.genre = genre;
+    }
+
+    public ArrayList<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(ArrayList<Comment> comments) {
+        this.comments = comments;
     }
 
     public int getNbComments() {

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import smartbookmarks.masson.diiage.org.Adapter.CommentAdapter;
+import smartbookmarks.masson.diiage.org.Database.CommentHelper;
 import smartbookmarks.masson.diiage.org.Database.DatabaseHelper;
 import smartbookmarks.masson.diiage.org.R;
 
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         DatabaseHelper helper = new DatabaseHelper(this);
-        helper.getWritableDatabase();
+        SQLiteDatabase db = helper.getWritableDatabase();
 
         buttonShowComments = (Button)findViewById(R.id.btnComments);
         buttonAddComment = (Button)findViewById(R.id.btnAddComment);

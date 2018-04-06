@@ -7,13 +7,13 @@ public class Comment {
     private int bookId;
     private int page;
     private String comment;
-    private Date date;
+    private String date;
     private String bookTitle;
 
     public Comment() {
     }
 
-    public Comment(int id, int bookId, int page, String comment, Date date, String bookTitle) {
+    public Comment(int id, int bookId, int page, String comment, String date, String bookTitle) {
         this.id = id;
         this.bookId = bookId;
         this.page = page;
@@ -22,7 +22,7 @@ public class Comment {
         this.bookTitle = bookTitle;
     }
 
-    public Comment(int id, int bookId, int page, String comment, Date date) {
+    public Comment(int id, int bookId, int page, String comment, String date) {
         this.id = id;
         this.bookId = bookId;
         this.page = page;
@@ -62,11 +62,11 @@ public class Comment {
         this.comment = comment;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

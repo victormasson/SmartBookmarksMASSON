@@ -38,7 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper  {
             TABLE_COMMENTS_BOOKID + " INTEGER," +
             TABLE_COMMENTS_PAGE + " INTEGER," +
             TABLE_COMMENTS_COMMENT + " TEXT," +
-            TABLE_COMMENTS_DATE + " DATETIME);";
+            TABLE_COMMENTS_DATE + " TEXT);";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,7 +51,6 @@ public class DatabaseHelper extends SQLiteOpenHelper  {
             db.execSQL(CREATE_TABLE_BOOKS);
             db.execSQL(CREATE_TABLE_COMMENTS);
 
-
             String strInsertBooks = "INSERT INTO " + TABLE_BOOKS + " (" + TABLE_BOOKS_ID + ", " + TABLE_BOOKS_TITLE + ", " + TABLE_BOOKS_AUTHOR + ", " + TABLE_BOOKS_GENRE + ") VALUES";
 
             db.execSQL(strInsertBooks + "(" + 1 + ",'Les fleurs du mal','Charles Baudelaire','Poèmes');");
@@ -62,10 +61,9 @@ public class DatabaseHelper extends SQLiteOpenHelper  {
             db.execSQL(strInsertBooks + "(" + 6 + ",'Vingt mille lieues sous les mers','Jules Verne','Aventure');");
             db.execSQL(strInsertBooks + "(" + 7 + ",'Les Trois Mousquetaires','Alexandre Dumas','Aventure');");
 
+            String strInsertComments = "INSERT INTO " + TABLE_COMMENTS + " (" + TABLE_COMMENTS_ID + ", " + TABLE_COMMENTS_BOOKID + ", " + TABLE_COMMENTS_PAGE + ", " + TABLE_COMMENTS_COMMENT + TABLE_COMMENTS_DATE + ") VALUES";
 
-            String strInsertComments = "INSERT INTO " + TABLE_COMMENTS + " (" + TABLE_COMMENTS_ID + ", " + TABLE_COMMENTS_BOOKID + ", " + TABLE_COMMENTS_PAGE + ", " + TABLE_COMMENTS_COMMENT + ") VALUES";
-
-            db.execSQL(strInsertComments + "(" + 1 + "," + 1 + "," + 1 + "," + "'commentaire');");
+            db.execSQL(strInsertComments + "(" + 1 + "," + 1 + "," + 1 + "," + "'commentaire'" + "'30/01/2010'" + ");");
         }
         catch (Exception e) {
             Log.w("Table creations", e.toString());
