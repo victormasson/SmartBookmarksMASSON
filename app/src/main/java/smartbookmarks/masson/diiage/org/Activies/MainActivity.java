@@ -6,10 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
-import smartbookmarks.masson.diiage.org.Adapter.CommentAdapter;
-import smartbookmarks.masson.diiage.org.Database.CommentHelper;
+import java.util.ArrayList;
+
 import smartbookmarks.masson.diiage.org.Database.DatabaseHelper;
+import smartbookmarks.masson.diiage.org.Entities.Book;
+import smartbookmarks.masson.diiage.org.Entities.Comment;
 import smartbookmarks.masson.diiage.org.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,5 +45,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        ArrayList<Comment> comments = helper.getComments(db);
+        ArrayList<Book> books = helper.getBooks(db);
+        double commentsByBook = helper.getAverageCommentsByBook(db);
+
+        TextView txtStats = findViewById(R.id.txtStats);
+        txtStats.setText("Books: " + books.size()
+                + "\nComment: " + comments.size()
+                + "\nAverage: " + commentsByBook + "%");
     }
 }

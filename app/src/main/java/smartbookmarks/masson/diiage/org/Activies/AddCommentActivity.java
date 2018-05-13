@@ -2,26 +2,20 @@ package smartbookmarks.masson.diiage.org.Activies;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 import smartbookmarks.masson.diiage.org.Adapter.SpinnerBooksAdapter;
-import smartbookmarks.masson.diiage.org.Database.BookHelper;
-import smartbookmarks.masson.diiage.org.Database.CommentHelper;
 import smartbookmarks.masson.diiage.org.Database.DatabaseHelper;
 import smartbookmarks.masson.diiage.org.Entities.Book;
 import smartbookmarks.masson.diiage.org.Entities.Comment;
@@ -42,11 +36,11 @@ public class AddCommentActivity extends AppCompatActivity implements AdapterView
         txtPageNumber = findViewById(R.id.txtPageNumber);
         txtComment = findViewById(R.id.txtComment);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
-        final SQLiteDatabase db = dbHelper.getWritableDatabase();
-        BookHelper bookHelper = new BookHelper(db, this);
-        final CommentHelper commentHelper = new CommentHelper(db, this);
-        books =  bookHelper.getBooks();
+        final DatabaseHelper helper = new DatabaseHelper(this);
+        final SQLiteDatabase db = helper.getWritableDatabase();
+        books = helper.getBooks(db);
+
+        // flate of the spinner
         Spinner spinnerBook = (Spinner)findViewById(R.id.spnBooks);
         SpinnerBooksAdapter adapter = new SpinnerBooksAdapter(books, this);
         spinnerBook.setAdapter(adapter);
@@ -70,7 +64,8 @@ public class AddCommentActivity extends AppCompatActivity implements AdapterView
                     Date dateNow = new Date();
                     String date = dateFormat.format(dateNow).toString();
                     Comment comment = new Comment(id, idBook, pageNumberInt, commentaire, date);
-                    commentHelper.addComment(comment);
+                    helper.addComment(db, comment);
+
                     Intent intent = new Intent(AddCommentActivity.this, MainActivity.class);
                     startActivity(intent);
                 } catch (NumberFormatException e) {

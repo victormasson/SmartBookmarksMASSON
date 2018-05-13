@@ -1,11 +1,17 @@
 package smartbookmarks.masson.diiage.org.Database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+
+import smartbookmarks.masson.diiage.org.Entities.Book;
+import smartbookmarks.masson.diiage.org.Entities.Comment;
 
 public class DatabaseHelper extends SQLiteOpenHelper  {
 
@@ -17,6 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper  {
     public static final String TABLE_BOOKS_TITLE = "title";
     public static final String TABLE_BOOKS_AUTHOR = "author";
     public static final String TABLE_BOOKS_GENRE = "genre";
+    public static final String TABLE_BOOKS_AUTHORID = "authorId";
 
     public static final String TABLE_COMMENTS = "Comments";
     public static final String TABLE_COMMENTS_ID = "id";
@@ -24,6 +31,11 @@ public class DatabaseHelper extends SQLiteOpenHelper  {
     public static final String TABLE_COMMENTS_PAGE = "page";
     public static final String TABLE_COMMENTS_COMMENT = "comment";
     public static final String TABLE_COMMENTS_DATE = "date";
+
+    public static final String TABLE_AUTHORS = "Authors";
+    public static final String TABLE_AUTHORS_ID = "id";
+    public static final String TABLE_AUTHORS_NAME = "name";
+    public static final String TABLE_AUTHORS_BIRTHDAY = "birthday";
 
     private static final String CREATE_TABLE_BOOKS =
             "CREATE TABLE IF NOT EXISTS " + TABLE_BOOKS + "(" +
@@ -40,6 +52,12 @@ public class DatabaseHelper extends SQLiteOpenHelper  {
             TABLE_COMMENTS_COMMENT + " TEXT," +
             TABLE_COMMENTS_DATE + " TEXT);";
 
+    private static final String CREATE_TABLE_AUTHORS =
+            "CREATE TABLE IF NOT EXISTS " + TABLE_AUTHORS + "(" +
+                    TABLE_AUTHORS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                    TABLE_AUTHORS_NAME + " TEXT," +
+                    TABLE_AUTHORS_BIRTHDAY + " TEXT);";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -48,6 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper  {
     public void onCreate(SQLiteDatabase db) {
 
         try {
+            // Create all table
             db.execSQL(CREATE_TABLE_BOOKS);
             db.execSQL(CREATE_TABLE_COMMENTS);
 
@@ -72,8 +91,150 @@ public class DatabaseHelper extends SQLiteOpenHelper  {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE Books;");
-        db.execSQL("DROP TABLE Comments;");
-        onCreate(db);
+        if (newVersion <= this.DATABASE_VERSION) {
+            try {
+                // add author ID
+                String alterBook = "ALTER TABLE " + TABLE_BOOKS + " ADD COLUMN " + TABLE_BOOKS_AUTHORID + "INTEGER;";
+
+                // add author table
+                db.execSQL(CREATE_TABLE_AUTHORS);
+
+                // insert authors
+                String strInsertAuthors = "INSERT INTO " + TABLE_AUTHORS + " (" + TABLE_AUTHORS_ID + ", " + TABLE_AUTHORS_NAME + ", " + TABLE_AUTHORS_BIRTHDAY + ") VALUES ";
+                db.execSQL(strInsertAuthors + "(" + 1 + ",'Charles Baudelaire','1900');");
+                db.execSQL(strInsertAuthors + "(" + 2 + ",'Emile Zola','1897');");
+                db.execSQL(strInsertAuthors + "(" + 3 + ",'Victor Hugo','1794');");
+                db.execSQL(strInsertAuthors + "(" + 4 + ",'George Orwell','1984');");
+                db.execSQL(strInsertAuthors + "(" + 5 + ",'Aldous Huxley','1431');");
+                db.execSQL(strInsertAuthors + "(" + 6 + ",'Jules Verne','2010');");
+                db.execSQL(strInsertAuthors + "(" + 7 + ",'Alexandre Dumas','1842');");
+            }
+            catch (Exception e) {
+                Log.w("Table creations", e.toString());
+            }
+        }
+    }
+
+    /**
+     * Add comment on book
+     * @param db database
+     * @param comment comment of the book
+     */
+    public void addComment(SQLiteDatabase db, Comment comment) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TABLE_COMMENTS_BOOKID, comment.getBookId());
+        contentValues.put(TABLE_COMMENTS_PAGE, comment.getPage());
+        contentValues.put(TABLE_COMMENTS_COMMENT, comment.getComment());
+        contentValues.put(TABLE_COMMENTS_DATE, comment.getDate());
+        long inserted = db.insert(TABLE_COMMENTS, null, contentValues);
+    }
+
+    /**
+     * get all comments
+     * @param db database
+     * @return all comments
+     */
+    public ArrayList<Comment> getComments(SQLiteDatabase db){
+        ArrayList<Comment> result = new ArrayList<Comment>();
+
+        Cursor cursor = db.query(
+                "Comments",
+                new String[]{"id", "bookId", "page", "comment", "date"},
+                "",
+                null,
+                null,
+                null,
+                null
+        );
+
+        while(cursor.moveToNext()){
+            int id = cursor.getInt(0);
+            int bookId = cursor.getInt(1);
+            int page = cursor.getInt(2);
+            String comment = cursor.getString(3);
+            String date = cursor.getString(4);
+
+            Comment c = new Comment(id, bookId, page, comment, date);
+            Book b = getBook(db, bookId);
+            c.setBookTitle(b.getTitle().toString());
+            result.add(c);
+        }
+        return result;
+    }
+
+    /**
+     * get all books
+     * @param db database
+     * @return all books
+     */
+    public ArrayList<Book> getBooks(SQLiteDatabase db){
+        ArrayList<Book> result = new ArrayList<Book>();
+
+        Cursor cursor = db.query(
+                "Books",
+                new String[]{"id", "title", "author", "genre"},
+                "",
+                null,
+                null,
+                null,
+                null
+        );
+
+        while(cursor.moveToNext()){
+            int id = cursor.getInt(0);
+            String title = cursor.getString(1);
+            String author = cursor.getString(2);
+            String genre = cursor.getString(3);
+            result.add(new Book(id, title, author, genre));
+        }
+
+        return result;
+    }
+
+    /**
+     * Get a book
+     * @param db database
+     * @param bookId book
+     * @return a book
+     */
+    public Book getBook(SQLiteDatabase db, long bookId){
+        Book result = new Book();
+
+        Cursor cursor = db.query(
+                "Books",
+                new String[]{"id", "title", "author", "genre"},
+                "id = ?",
+                new String[]{String.valueOf(bookId)},
+                null,
+                null,
+                null
+        );
+
+        while(cursor.moveToNext()){
+            int id = cursor.getInt(0);
+            String title = cursor.getString(1);
+            String author = cursor.getString(2);
+            String genre = cursor.getString(3);
+
+            result = new Book(id, title, author, genre);
+        }
+
+        return result;
+    }
+
+
+    /***
+     * get the average of comments by book.
+     * @param db database
+     * @return the average
+     */
+    public double getAverageCommentsByBook(SQLiteDatabase db){
+        ArrayList<Book> listBook = this.getBooks(db);
+        ArrayList<Comment> listComment = this.getComments(db);
+
+        int nbC = listComment.size();
+        int nbB = listBook.size();
+        double average = nbC * 100 / nbB;
+        return average;
     }
 }
